@@ -1,38 +1,31 @@
-import  { addContact, getContactById, removeContact, listContacts } from './contact.js'
+import yargs from "yargs";
 
-// Приклади викликів функцій
-(async () => {
-  // Додавання нового контакту
-  const newContact = await addContact(
-    "New Contact",
-    "new@example.com",
-    "123-456-7890"
-  );
-  console.log("Додано новий контакт:", newContact);
+import {
+  addContact,
+  getContactById,
+  removeContact,
+  listContacts,
+} from "./contact.js";
 
-  // Отримання контакту за id
-  const contactIdToFind = newContact.id;
-  const foundContact = await getContactById(contactIdToFind);
-  if (foundContact) {
-    console.log("Знайдено контакт за id:", foundContact);
-  } else {
-    console.log("Контакт не знайдений.");
+async function invokeAction({ action, id, name, email, phone }) {
+  switch (action) {
+    case "list":
+      const allMovies = await listContacts();
+      return console.log(allMovies);
+    case "get":
+      const oneMovie = await getContactById(id);
+      return console.log(oneMovie);
+
+    case "add":
+      const newMovie = await addContact(name, email, phone);
+      return console.log(newMovie);
+    case "remove":
+      const deleteMovie = await removeContact(id);
+      return console.log(deleteMovie);
+
+    default:
+      console.warn("Unknown action type!");
   }
-
-  // Видалення контакту за id
-  const contactIdToRemove = newContact.id;
-  const removedContact = await removeContact(contactIdToRemove);
-  if (removedContact) {
-    console.log("Видалено контакт:", removedContact);
-  } else {
-    console.log("Контакт не знайдений.");
-  }
-
-  // Отримання списку всіх контактів
-  const allContacts = await listContacts();
-  if (allContacts.length > 0) {
-    console.log("Список всіх контактів:", allContacts);
-  } else {
-    console.log("Список контактів порожній.");
-  }
-})();
+}
+const { argv } = yargs(process.argv.slice(2));
+invokeAction(argv);
